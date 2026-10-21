@@ -198,7 +198,7 @@ const OPCOES = [
 {
   titulo: '1 · Gota líquida',
   texto: 'O vermelho nasce como uma gota e escorre até a elipse. O olho pinga no lugar e a barra corre até a borda como líquido, e as três partes se assentam juntas. Saída: mergulho no vermelho.',
-  fim: 2650,
+  fim: 2650, forma: 1500, sai: 1700,
   html: () => `<div class="layer bg">
       <div class="icon" data-r="icon">${svgIcone(`
         <path data-r="fill" fill="${RED}"/>
@@ -234,7 +234,7 @@ const OPCOES = [
 {
   titulo: '2 · Vidro',
   texto: 'O anel, o olho e a barra entram em 3D como vidro fosco sobre luzes vermelha e azul e se solidificam juntos no ícone. Saída: a tela inicial sobe como uma folha.',
-  fim: 2500,
+  fim: 2500, forma: 1550, sai: 1720,
   html: () => `<div class="layer bg" data-r="stage">
       <div class="blob" data-r="b1" style="background:radial-gradient(closest-side,rgba(194,13,25,.55),rgba(194,13,25,0))"></div>
       <div class="blob" data-r="b2" style="background:radial-gradient(closest-side,rgba(18,64,94,.5),rgba(18,64,94,0))"></div>
@@ -282,7 +282,7 @@ const OPCOES = [
 {
   titulo: '3 · Janela',
   texto: 'O contorno se desenha, o vermelho preenche a partir do olho e a barra fecha o ícone. Depois o miolo vira uma janela que cresce e revela o app por dentro da marca.',
-  fim: 2600,
+  fim: 2600, forma: 1450, sai: 1600,
   html: () => `<div class="layer bg"></div>
     <div class="layer" data-r="home" style="visibility:hidden"><div class="layer" data-r="homeIn" style="transform-origin:195px 400px">${HOME}</div></div>
     <div class="layer">
@@ -313,7 +313,7 @@ const OPCOES = [
 {
   titulo: '4 · Keynote',
   texto: 'O ícone vem de muito perto, desfocado, e recua até o tamanho final, com o olho e a barra em camadas de profundidade. Um brilho passa e o app entra saindo do desfoque.',
-  fim: 2500,
+  fim: 2500, forma: 1550, sai: 1720,
   html: () => `<div class="layer bg"></div>
     <div class="layer" data-r="stage">
       <div class="icon">
@@ -345,7 +345,7 @@ const OPCOES = [
 {
   titulo: '5 · Encaixe',
   texto: 'As metades da elipse chegam de cima e de baixo, o olho pela esquerda e a barra pela direita, selando a emenda com um clique. A tela se abre como cortina na mesma linha.',
-  fim: 2480,
+  fim: 2480, forma: 1550, sai: 1720,
   html: () => {
     const conteudo = `
       <div class="icon" data-r="icon">
@@ -398,7 +398,17 @@ const zoomFixo = params.has('z') ? +params.get('z') : null;
 const fmt = ms => (ms / 1000).toFixed(2).replace('.', ',') + ' s';
 const grade = document.getElementById('grade');
 const LOOP_EXTRA = 1400; // a tela inicial fica 1,1 s parada, depois volta ao quadro da splash
-const RITMO = 1.25;      // todas mais calmas: a linha do tempo inteira estica 25%
+const RITMO = 1.25;      // duração total = linha do tempo original × 1,25
+const RITMO_FORMA = 1, RITMO_SAIDA = 1.15;
+// O tempo não estica por igual: a marca se forma no ritmo original (rápido), a saída
+// fica só um pouco mais calma, e TODA a sobra vai para o logo pronto com o nome e o
+// "OS Digital" na tela. Mapa real → linha do tempo da opção, em três trechos.
+function mapa(o, t) {
+  const fForma = o.forma * RITMO_FORMA, fSai = o.duracao - (o.fim - o.sai) * RITMO_SAIDA;
+  if (t <= fForma) return t / RITMO_FORMA;
+  if (t <= fSai) return o.forma + (o.sai - o.forma) * (t - fForma) / (fSai - fForma);
+  return o.sai + (t - fSai) / RITMO_SAIDA;
+}
 
 OPCOES.forEach((o, i) => {
   if (so !== null && so !== i + 1) return;
@@ -450,7 +460,7 @@ lenta.addEventListener('click', () => {
 });
 
 function desenhar(o, t) {
-  o.render(t / RITMO, o.q);
+  o.render(mapa(o, t), o.q);
   css(o.q('reset'), { opacity: f2(seg(t, o.duracao + 1100, o.duracao + 1400)) });
   o.prog.style.width = (100 * Math.min(1, t / o.duracao)) + '%';
   o.tc.textContent = t > o.duracao ? 'tela inicial' : fmt(t);
