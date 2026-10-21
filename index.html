@@ -54,9 +54,9 @@
   .icon svg, .part svg { position: absolute; left: 0; top: 0; overflow: visible; }
   .part { position: absolute; left: 0; top: 0; width: 150px; height: 102px; transform-origin: 75px 51px; }
   .wm { position: absolute; left: 117px; top: 474px; width: 156px; opacity: 0; }
-  .app { position: absolute; left: 0; right: 0; top: 752px; text-align: center; opacity: 0; }
-  .app small { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #8A8578; }
-  .app b { display: block; margin-top: 5px; font-size: 17px; font-weight: 800; letter-spacing: -.01em; color: #141A20; }
+  .app { position: absolute; left: 0; right: 0; top: 740px; text-align: center; opacity: 0; }
+  .app small { display: block; font-size: 11.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #8A8578; }
+  .app b { display: block; margin-top: 6px; font-size: 21px; font-weight: 800; letter-spacing: -.01em; color: #141A20; }
   .reset { position: absolute; inset: 0; background: var(--splash); opacity: 0; z-index: 40; pointer-events: none; }
   .sb { position: absolute; left: 0; right: 0; top: 0; height: 54px; z-index: 50; pointer-events: none; }
   .sb-time { position: absolute; left: 46px; top: 17px; font-size: 16px; font-weight: 700; color: #141A20; letter-spacing: -.01em; }
@@ -104,7 +104,7 @@
 <header>
   <div>
     <h1>Abertura animada do OS Digital</h1>
-    <p>Cinco propostas de splash animada. Todas começam no mesmo quadro da splash nativa (fundo <b>#F3F1EC</b>), têm só a marca como protagonista e terminam na tela <b>Minhas OS</b>, entre 2,8 e 3,0 segundos. Cada celular repete a animação em loop.</p>
+    <p>Cinco propostas de splash animada. Todas começam no mesmo quadro da splash nativa (fundo <b>#F3F1EC</b>), têm só a marca como protagonista e terminam na tela <b>Minhas OS</b>, entre 3,1 e 3,3 segundos. Cada celular repete a animação em loop.</p>
   </div>
   <div class="acoes">
     <button id="todas" type="button">Reiniciar todas</button>
@@ -398,7 +398,7 @@ const zoomFixo = params.has('z') ? +params.get('z') : null;
 const fmt = ms => (ms / 1000).toFixed(2).replace('.', ',') + ' s';
 const grade = document.getElementById('grade');
 const LOOP_EXTRA = 1400; // a tela inicial fica 1,1 s parada, depois volta ao quadro da splash
-const RITMO = 1.12;      // todas um pouco mais calmas: a linha do tempo inteira estica 12%
+const RITMO = 1.25;      // todas mais calmas: a linha do tempo inteira estica 25%
 
 OPCOES.forEach((o, i) => {
   if (so !== null && so !== i + 1) return;
