@@ -104,7 +104,7 @@
 <header>
   <div>
     <h1>Abertura animada do OS Digital</h1>
-    <p>Cinco propostas de splash animada. Todas começam no mesmo quadro da splash nativa (fundo <b>#F3F1EC</b>), têm só a marca como protagonista e terminam na tela <b>Minhas OS</b>, entre 2,4 e 2,7 segundos. Cada celular repete a animação em loop.</p>
+    <p>Cinco propostas de splash animada. Todas começam no mesmo quadro da splash nativa (fundo <b>#F3F1EC</b>), têm só a marca como protagonista e terminam na tela <b>Minhas OS</b>, entre 2,8 e 3,0 segundos. Cada celular repete a animação em loop.</p>
   </div>
   <div class="acoes">
     <button id="todas" type="button">Reiniciar todas</button>
@@ -398,13 +398,14 @@ const zoomFixo = params.has('z') ? +params.get('z') : null;
 const fmt = ms => (ms / 1000).toFixed(2).replace('.', ',') + ' s';
 const grade = document.getElementById('grade');
 const LOOP_EXTRA = 1400; // a tela inicial fica 1,1 s parada, depois volta ao quadro da splash
+const RITMO = 1.12;      // todas um pouco mais calmas: a linha do tempo inteira estica 12%
 
 OPCOES.forEach((o, i) => {
   if (so !== null && so !== i + 1) return;
   const el = document.createElement('article');
   el.className = 'opt';
   el.innerHTML = `<div class="phone"><div class="vp"><div class="screen">${o.html()}${RESET}${SB}</div></div></div>
-    <div class="meta"><div class="tl"><h2>${o.titulo}</h2><span class="dur">${fmt(o.fim)}</span></div><p>${o.texto}</p>
+    <div class="meta"><div class="tl"><h2>${o.titulo}</h2><span class="dur">${fmt(o.fim * RITMO)}</span></div><p>${o.texto}</p>
     <div class="ctl"><button type="button">Reiniciar</button><div class="prog"><i></i></div><span class="tc"></span></div></div>`;
   grade.appendChild(el);
   // ids únicos de clipPath/gradiente por celular
@@ -418,7 +419,7 @@ OPCOES.forEach((o, i) => {
   });
   const cache = {};
   o.q = r => cache[r] || (cache[r] = [...el.querySelectorAll(`[data-r="${r}"]`)]);
-  o.el = el; o.inicio = 0; o.periodo = o.fim + LOOP_EXTRA;
+  o.el = el; o.inicio = 0; o.duracao = o.fim * RITMO; o.periodo = o.duracao + LOOP_EXTRA;
   o.prog = el.querySelector('.prog i'); o.tc = el.querySelector('.tc');
   el.querySelector('.ctl button').addEventListener('click', () => { o.inicio = relogio; });
 });
@@ -449,10 +450,10 @@ lenta.addEventListener('click', () => {
 });
 
 function desenhar(o, t) {
-  o.render(t, o.q);
-  css(o.q('reset'), { opacity: f2(seg(t, o.fim + 1100, o.fim + 1400)) });
-  o.prog.style.width = (100 * Math.min(1, t / o.fim)) + '%';
-  o.tc.textContent = t > o.fim ? 'tela inicial' : fmt(t);
+  o.render(t / RITMO, o.q);
+  css(o.q('reset'), { opacity: f2(seg(t, o.duracao + 1100, o.duracao + 1400)) });
+  o.prog.style.width = (100 * Math.min(1, t / o.duracao)) + '%';
+  o.tc.textContent = t > o.duracao ? 'tela inicial' : fmt(t);
 }
 function quadro(agora) {
   relogio += Math.min(agora - ultimo, 50) * velocidade;
