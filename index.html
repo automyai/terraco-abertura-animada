@@ -54,6 +54,9 @@
   .icon svg, .part svg { position: absolute; left: 0; top: 0; overflow: visible; }
   .part { position: absolute; left: 0; top: 0; width: 150px; height: 102px; transform-origin: 75px 51px; }
   .wm { position: absolute; left: 117px; top: 474px; width: 156px; opacity: 0; }
+  .app { position: absolute; left: 0; right: 0; top: 752px; text-align: center; opacity: 0; }
+  .app small { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #8A8578; }
+  .app b { display: block; margin-top: 5px; font-size: 17px; font-weight: 800; letter-spacing: -.01em; color: #141A20; }
   .reset { position: absolute; inset: 0; background: var(--splash); opacity: 0; z-index: 40; pointer-events: none; }
   .sb { position: absolute; left: 0; right: 0; top: 0; height: 54px; z-index: 50; pointer-events: none; }
   .sb-time { position: absolute; left: 46px; top: 17px; font-size: 16px; font-weight: 700; color: #141A20; letter-spacing: -.01em; }
@@ -178,7 +181,7 @@ const SB = `<div class="sb"><span class="sb-time">9:41</span><div class="sb-isla
   <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#141A20" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.2a9.5 9.5 0 0 1 13 0M4 7a5.8 5.8 0 0 1 8 0"/><circle cx="8" cy="10" r="1" fill="#141A20" stroke="none"/></svg>
   <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="#141A20" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="#141A20"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="#141A20" opacity=".4"/></svg>
 </span></div>`;
-const WMIMG = `<img data-r="wm" class="wm" src="${WM}" alt="">`;
+const WMIMG = `<img data-r="wm" class="wm" src="${WM}" alt=""><div data-r="app" class="app"><small>aplicativo</small><b>OS Digital</b></div>`;
 const RESET = `<div class="reset" data-r="reset"></div>`;
 
 const css = (els, o) => { for (const e of els) for (const k in o) e.style[k] = o[k]; };
@@ -223,7 +226,7 @@ const OPCOES = [
     // expo-in de verdade: a escala cresce em progressão geométrica, a partir de um ponto do vermelho longe de bordas
     const z = Math.pow(120, Math.pow(seg(t, 1850, 2300), 1.5));
     css(q('icon'), { transformOrigin: '92px 27px', transform: `scale(${f2(sx * z)},${f2(sy * z)})` });
-    nome(q('wm'), t, 1150, 1500, 1700, 1850);
+    nome([...q('wm'), ...q('app')], t, 1150, 1500, 1700, 1850);
     const ph = eout(seg(t, 2250, 2650));
     css(q('home'), { opacity: f2(ph), transform: `scale(${f2(1.05 - .05 * ph)})` });
   }
@@ -273,7 +276,7 @@ const OPCOES = [
     css(q('stage'), { transform: `scale(${f2(1 - .08 * c)})` });
     css(q('dim'), { opacity: f2(.28 * c) });
     css(q('home'), { visibility: t >= 1850 ? 'visible' : 'hidden', transform: `translateY(${f2(844 * (1 - c))}px)`, borderRadius: `${f2(40 * (1 - c * c))}px ${f2(40 * (1 - c * c))}px 0 0` });
-    nome(q('wm'), t, 1200, 1550, 1720, 1850);
+    nome([...q('wm'), ...q('app')], t, 1200, 1550, 1720, 1850);
   }
 },
 {
@@ -297,7 +300,7 @@ const OPCOES = [
     const x1 = lerp(lerp(34, 148, eout(seg(t, 760, 1060))), 34, ein(seg(t, 1620, 1820)));
     attr(q('bar'), { d: x1 - 34 < .5 ? 'M0 0Z' : barra(34, x1, 51, 2.75) });
     attr(q('fill'), { opacity: f2(1 - eio(seg(t, 1760, 1960))) });
-    nome(q('wm'), t, 1100, 1450, 1600, 1730);
+    nome([...q('wm'), ...q('app')], t, 1100, 1450, 1600, 1730);
     // a janela: o miolo do anel recorta a tela inicial e cresce até cobrir tudo
     const fz = Math.pow(13, Math.pow(seg(t, 1950, 2600), 1.6));
     const pulse = 1 + .03 * kick(t - 1060, 110, 40);
@@ -332,7 +335,7 @@ const OPCOES = [
     }
     const ps = seg(t, 1050, 1500);
     attr(q('sheen'), { x: f2(lerp(-60, 210, eio(ps))), opacity: f2(.5 * Math.sin(Math.PI * ps)) });
-    nome(q('wm'), t, 1150, 1550, 1720, 1850, .06);
+    nome([...q('wm'), ...q('app')], t, 1150, 1550, 1720, 1850, .06);
     const e = ein(seg(t, 1850, 2350));
     css(q('stage'), { filter: `blur(${f2(28 * e)}px)`, transform: `scale(${f2(1 + .15 * e)})`, opacity: f2(1 - e) });
     const h = eout(seg(t, 1950, 2500));
@@ -377,7 +380,7 @@ const OPCOES = [
     const pw = seg(t, 790, 1250);
     css(q('wave'), { transform: `scale(${f2(1 + .5 * eout(pw))})` });
     attr(q('wave'), { opacity: f2(t < 790 ? 0 : .35 * (1 - pw)) });
-    nome(q('wm'), t, 1150, 1550, 1720, 1850);
+    nome([...q('wm'), ...q('app')], t, 1150, 1550, 1720, 1850);
     // cortina: abre na linha da barra
     const p = quartIO(seg(t, 1880, 2480)), abrindo = t >= 1880;
     css(q('cTop'), { clipPath: abrindo ? 'inset(0 0 444px 0)' : 'none', transform: `translateY(${f2(-400 * p)}px)` });
