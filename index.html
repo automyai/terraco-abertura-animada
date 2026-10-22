@@ -104,7 +104,7 @@
 <header>
   <div>
     <h1>Abertura animada do OS Digital</h1>
-    <p>Cinco propostas de splash animada. Todas começam no mesmo quadro da splash nativa (fundo <b>#F3F1EC</b>), têm só a marca como protagonista e terminam na tela <b>Minhas OS</b>, entre 3,1 e 3,3 segundos. Cada celular repete a animação em loop.</p>
+    <p>Seis propostas de splash animada (a 6ª junta a formação da Gota líquida com a saída da Keynote). Todas começam no mesmo quadro da splash nativa (fundo <b>#F3F1EC</b>), têm só a marca como protagonista e terminam na tela <b>Minhas OS</b>, entre 3,1 e 3,3 segundos. Cada celular repete a animação em loop.</p>
   </div>
   <div class="acoes">
     <button id="todas" type="button">Reiniciar todas</button>
@@ -193,7 +193,7 @@ function nome(els, t, a, b, c, d, zoom = 0) {
     transform: `translateY(${f2(8 * (1 - i))}px) scale(${f2(1 + zoom * (1 - i) + .03 * o)})` });
 }
 
-/* ---------------- as 5 opções ---------------- */
+/* ---------------- as opções ---------------- */
 const OPCOES = [
 {
   titulo: '1 · Gota líquida',
@@ -388,6 +388,21 @@ const OPCOES = [
     css(q('home'), { transform: `scale(${f2(.94 + .06 * p)})` });
   }
 },
+{
+  titulo: '6 · Gota + Keynote',
+  texto: 'A formação da Gota líquida (o vermelho escorre até a elipse, o olho pinga e a barra corre até a borda) com a saída da Keynote: a marca se desfaz em desfoque e o app entra saindo do desfoque.',
+  fim: 2500, forma: 1500, sai: 1700,
+  html: () => OPCOES[0].html().replace('<div class="layer bg">', '<div class="layer bg" data-r="stage">'),
+  render(t, q) {
+    // a formação é a mesma da opção 1, parada antes do mergulho
+    OPCOES[0].render(Math.min(t, 1849), q);
+    // a saída é a da opção 4
+    const e = ein(seg(t, 1850, 2350));
+    css(q('stage'), { filter: `blur(${f2(28 * e)}px)`, transform: `scale(${f2(1 + .15 * e)})`, opacity: f2(1 - e) });
+    const h = eout(seg(t, 1950, 2500));
+    css(q('home'), { opacity: f2(h), filter: `blur(${f2(18 * (1 - h))}px)`, transform: `scale(${f2(1.06 - .06 * h)})` });
+  }
+},
 ];
 
 /* ---------------- montagem, relógio único, loop ---------------- */
@@ -437,14 +452,18 @@ const ativas = OPCOES.filter(o => o.el);
 
 function escala() {
   const W = Math.min(window.innerWidth, 1240) - (window.innerWidth <= 600 ? 32 : 48);
-  let s = .46;
-  for (const n of [5, 3, 2, 1]) {
+  let s = .46, cols = 1;
+  for (const n of [6, 3, 2, 1]) { // divisores de 6: nenhuma linha com um celular sozinho
     if (n > ativas.length) continue;
-    s = (W - 24 * (n - 1)) / n / 404;
+    cols = n;
+    s = ((W - 24 * (n - 1) - 4) / n - 14) / 390; // cartão = 390·s + 14 (moldura); 4 px de folga p/ arredondamento
     if (s >= .4 || n === 1) break;
   }
   s = Math.min(zoomFixo || .56, s);
   if (zoomFixo) s = zoomFixo;
+  // a grade tem a largura exata de `cols` celulares: o que sobra não puxa um a mais para a linha
+  const pad = window.innerWidth <= 600 ? 16 : 24;
+  grade.style.maxWidth = (cols * (390 * s + 14) + (cols - 1) * 24 + 2 * pad + 4) + 'px';
   document.documentElement.style.setProperty('--s', s.toFixed(4));
   ativas.forEach(o => o.el.style.width = (390 * s + 14) + 'px');
 }
